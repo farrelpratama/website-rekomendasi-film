@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Profil{% endblock %}
+{% block content %}
+
+<h2>👤 Profil {{ user.username }}</h2>
+
+<a href="/accounts/logout/" class="btn btn-danger mb-4">Logout</a>
+
+<h4>⭐ Bookmark Film</h4>
+
+{% for film in bookmarks %}
+  <div class="card mb-3">
+    <div class="card-body d-flex align-items-center">
+      {% if film.poster %}
+        <img src="{{ film.poster }}" width="70" class="me-3">
+      {% endif %}
+
+      <div class="me-auto">
+        <strong>{{ film.title }}</strong><br>
+        <a href="{% url 'detail' film.imdb_id %}">Detail</a>
+      </div>
+
+      <form
+        method="post"
+        action="{% url 'remove_bookmark' film.imdb_id %}"
+      >
+        {% csrf_token %}
+        <button class="btn btn-sm btn-outline-danger">
+          🗑️
+        </button>
+      </form>
+    </div>
+  </div>
+{% empty %}
+  <p>Belum ada bookmark.</p>
+{% endfor %}
+
+{% endblock %}

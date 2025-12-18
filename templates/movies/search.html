@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Cari Film{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Cari Film</h2>
+
+<form method="get" class="mb-4">
+  <div class="input-group">
+    <input
+      type="text"
+      name="q"
+      class="form-control"
+      placeholder="Masukkan judul film..."
+      value="{{ query|default:'' }}"
+      required
+    />
+    <button class="btn btn-primary">Cari</button>
+  </div>
+</form>
+
+{% if movies %}
+  {% if movies.Response == "True" %}
+    <div class="row">
+      {% for film in movies.Search %}
+        <div class="col-md-4 mb-3">
+          <div class="card h-100">
+            {% if film.Poster != "N/A" %}
+              <img src="{{ film.Poster }}" class="card-img-top">
+            {% endif %}
+            <div class="card-body">
+              <h5 class="card-title">{{ film.Title }}</h5>
+              <p class="card-text">{{ film.Year }}</p>
+              <a href="{% url 'detail' film.imdbID %}" class="btn btn-sm btn-outline-primary">
+                Lihat Detail
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>Film tidak ditemukan.</p>
+  {% endif %}
+{% endif %}
+{% endblock %}

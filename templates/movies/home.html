@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">🎬 Rekomendasi Film</h2>
+
+{% if recommendations and recommendations.Response == "True" %}
+  <div class="row">
+    {% for film in recommendations.Search|slice:":6" %}
+      <div class="col-md-4 mb-3">
+        <div class="card h-100">
+          {% if film.Poster != "N/A" %}
+            <img src="{{ film.Poster }}" class="card-img-top">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ film.Title }}</h5>
+            <p class="card-text">{{ film.Year }}</p>
+            <a href="{% url 'detail' film.imdbID %}" class="btn btn-sm btn-primary">
+              Lihat Detail
+            </a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>Rekomendasi belum tersedia.</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Detail Film{% endblock %}
+
+{% block content %}
+
+{% if error %}
+  <div class="alert alert-danger">
+    {{ error }}
+  </div>
+{% else %}
+
+<!-- DETAIL FILM -->
+<div class="row mb-4">
+  <div class="col-md-4">
+    {% if movie.Poster != "N/A" %}
+      <img src="{{ movie.Poster }}" class="img-fluid rounded shadow">
+    {% endif %}
+  </div>
+
+  <div class="col-md-8">
+    <h2>{{ movie.Title }} ({{ movie.Year }})</h2>
+    <p><strong>Genre:</strong> {{ movie.Genre }}</p>
+    <p><strong>Durasi:</strong> {{ movie.Runtime }}</p>
+    <p><strong>IMDb Rating:</strong> ⭐ {{ movie.imdbRating }}</p>
+    <p class="mt-3">{{ movie.Plot }}</p>
+  </div>
+</div>
+
+<hr>
+
+<!-- STYLE BINTANG -->
+<style>
+  .star-rating {
+    direction: rtl;
+    display: inline-flex;
+    font-size: 1.8rem;
+  }
+  .star-rating input {
+    display: none;
+  }
+  .star-rating label {
+    color: #ccc;
+    cursor: pointer;
+  }
+  .star-rating input:checked ~ label,
+  .star-rating label:hover,
+  .star-rating label:hover ~ label {
+    color: gold;
+  }
+</style>
+
+<!-- FORM REVIEW -->
+{% if user.is_authenticated %}
+  <h4 class="mb-3">Tambah Review</h4>
+
+  <form method="post" action="{% url 'add_review' %}" class="mb-4">
+    {% csrf_token %}
+    <input type="hidden" name="imdb_id" value="{{ movie.imdbID }}">
+
+    <div class="mb-3">
+      <label class="form-label">Rating</label><br>
+
+      <div class="star-rating">
+        <input type="radio" name="rating" value="5" id="star5" required>
+        <label for="star5">★</label>
+
+        <input type="radio" name="rating" value="4" id="star4">
+        <label for="star4">★</label>
+
+        <input type="radio" name="rating" value="3" id="star3">
+        <label for="star3">★</label>
+
+        <input type="radio" name="rating" value="2" id="star2">
+        <label for="star2">★</label>
+
+        <input type="radio" name="rating" value="1" id="star1">
+        <label for="star1">★</label>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Komentar</label>
+      <textarea
+        name="comment"
+        class="form-control"
+        rows="3"
+        required
+      ></textarea>
+    </div>
+
+    <button class="btn btn-success">Kirim Review</button>
+  </form>
+
+{% else %}
+  <div class="alert alert-info">
+    <a href="/accounts/login/">Login</a> untuk memberi review.
+  </div>
+{% endif %}
+
+<hr>
+
+<!-- LIST REVIEW -->
+<h4 class="mb-3">Review Pengguna</h4>
+
+{% for review in reviews %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <strong>{{ review.user.username }}</strong>
+
+      <div>
+        {% for i in "12345" %}
+          {% if forloop.counter <= review.rating %}
+            ⭐
+          {% else %}
+            ☆
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <p class="mt-2 mb-0">{{ review.comment }}</p>
+    </div>
+  </div>
+{% empty %}
+  <p>Belum ada review untuk film ini.</p>
+{% endfor %}
+
+{% endif %}
+
+{% endblock %}

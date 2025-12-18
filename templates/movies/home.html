@@ -1,32 +1,52 @@
 {% extends "base.html" %}
-
 {% block title %}Home{% endblock %}
 
 {% block content %}
 
 <h2 class="mb-4">🎬 Rekomendasi Film</h2>
 
-{% if recommendations and recommendations.Response == "True" %}
+<!-- RANDOM -->
+<h4 class="mt-4">🎲 Random Picks</h4>
+<div class="row">
+  {% for film in random_movies %}
+    <div class="col-md-4 col-lg-2 mb-3">
+      <div class="card h-100">
+        {% if film.Poster != "N/A" %}
+          <img src="{{ film.Poster }}" class="card-img-top">
+        {% endif %}
+        <div class="card-body p-2">
+          <h6 class="card-title">{{ film.Title }}</h6>
+          <a href="{% url 'detail' film.imdbID %}"
+             class="btn btn-sm btn-primary">
+            Detail
+          </a>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<!-- BOOKMARK BASED -->
+{% if user.is_authenticated and bookmark_movies %}
+  <h4 class="mt-5">⭐ Based on Your Bookmarks</h4>
   <div class="row">
-    {% for film in recommendations.Search|slice:":6" %}
-      <div class="col-md-4 mb-3">
+    {% for film in bookmark_movies %}
+      <div class="col-md-4 col-lg-2 mb-3">
         <div class="card h-100">
           {% if film.Poster != "N/A" %}
             <img src="{{ film.Poster }}" class="card-img-top">
           {% endif %}
-          <div class="card-body">
-            <h5 class="card-title">{{ film.Title }}</h5>
-            <p class="card-text">{{ film.Year }}</p>
-            <a href="{% url 'detail' film.imdbID %}" class="btn btn-sm btn-primary">
-              Lihat Detail
+          <div class="card-body p-2">
+            <h6 class="card-title">{{ film.Title }}</h6>
+            <a href="{% url 'detail' film.imdbID %}"
+               class="btn btn-sm btn-outline-primary">
+              Detail
             </a>
           </div>
         </div>
       </div>
     {% endfor %}
   </div>
-{% else %}
-  <p>Rekomendasi belum tersedia.</p>
 {% endif %}
 
 {% endblock %}
